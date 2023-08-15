@@ -2,8 +2,11 @@ using LeaveManagement.Web.Configurations;
 using LeaveManagement.Web.Contracts;
 using LeaveManagement.Web.Data;
 using LeaveManagement.Web.Repositories;
+using LeaveManagement.Web.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,10 @@ builder.Services.AddControllersWithViews();
 // add interfaces implementations
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
+
+// inject mail sender implementation
+// TODO: install mail server and then incomment next line
+// builder.Services.AddTransient<IEmailSender>(_ => new EmailSender("localhost", 25, "no-replay@localhost.com"));
 
 // Added auto mapper by me
 builder.Services.AddAutoMapper(typeof(MapperConfig));
