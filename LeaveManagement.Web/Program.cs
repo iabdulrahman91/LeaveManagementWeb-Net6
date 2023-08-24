@@ -25,10 +25,11 @@ builder.Services.AddControllersWithViews();
 // add interfaces implementations
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
+builder.Services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
 
 // inject mail sender implementation
 // TODO: install mail server and then incomment next line
-// builder.Services.AddTransient<IEmailSender>(_ => new EmailSender("localhost", 25, "no-replay@localhost.com"));
+builder.Services.AddTransient<IEmailSender>(_ => new EmailSender("localhost", 1025, "no-replay@localhost.com"));
 
 // Added auto mapper by me
 builder.Services.AddAutoMapper(typeof(MapperConfig));

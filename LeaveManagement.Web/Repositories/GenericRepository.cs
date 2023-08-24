@@ -14,7 +14,7 @@ namespace LeaveManagement.Web.Repositories
             this._context = context;
         }
 
-        public async Task<T> GetAsync(int id)
+        public async Task<T?> GetAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
@@ -38,14 +38,23 @@ namespace LeaveManagement.Web.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var entity = await _context.Set<T>().FindAsync(id);
-            _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync();
+            var entity = await GetAsync(id);
+            if (entity != null)
+            {
+                _context.Set<T>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task UpdateAsync(T entity)
         {
             _context.Update(entity); // alternatively, you can use context.Entry(entity).State = EntityState.Modified; 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRangeAsync(List<T> entities)
+        {
+            await _context.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
         }
     }

@@ -17,7 +17,7 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DefaultDays)
-            </th
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -33,7 +33,13 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+            </td>
+            <td>
+                <form asp-action="AllocateLeave">
+                    <input type="hidden" asp-for="@item.Id" name="leaveTypeId" />
+                    <input type="submit" value="AllocateLeave" class="btn btn-primary" />
+                </form>
             </td>
         </tr>
 }
