@@ -36,8 +36,8 @@ namespace LeaveManagement.Web.Repositories
                     {
                         allocation.Add(new LeaveAllocation
                         {
-                            EmployeeId = employee.Id,
-                            LeaveTypeId = leaveType.Id,
+                            Employee = employee,
+                            LeaveType = leaveType,
                             Period = period,
                             NumberOfDays = leaveType?.DefaultDays ?? default,
                         });
@@ -52,7 +52,7 @@ namespace LeaveManagement.Web.Repositories
             var employee = await userManager.FindByIdAsync(employeeId);
             var leaveAllocations = await context.LeaveAllocations
                                                     .Include(q => q.LeaveType)
-                                                    .Where(q => q.EmployeeId == employee.Id)
+                                                    .Where(q => q.Employee.Id == employee.Id)
                                                     .ToListAsync();
 
             var employeeLeaveAllocationVM = mapper.Map<EmployeeLeaveAllocationVM>(employee);
@@ -63,8 +63,8 @@ namespace LeaveManagement.Web.Repositories
 
         public async Task<bool> LeaveAllocationExists(string employeeId, int leaveTypeId, int period)
         {
-            return await context.LeaveAllocations.AnyAsync(q => q.EmployeeId == employeeId
-                                                          && q.LeaveTypeId == leaveTypeId
+            return await context.LeaveAllocations.AnyAsync(q => q.Employee.Id == employeeId
+                                                          && q.LeaveType.Id == leaveTypeId
                                                           && q.Period == period);
         }
     }

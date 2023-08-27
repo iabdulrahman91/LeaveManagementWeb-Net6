@@ -3,9 +3,11 @@ using LeaveManagement.Web.Constents;
 using LeaveManagement.Web.Contracts;
 using LeaveManagement.Web.Data;
 using LeaveManagement.Web.Models;
+using LeaveManagement.Web.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -31,7 +33,7 @@ namespace LeaveManagement.Web.Controllers
         }
 
         // GET: EmployeesController/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string id, string name)
         {
             EmployeeLeaveAllocationVM employeeLeaveAllocations = await leaveAllocationRepository.GetEmployeeLeaveAllocation(id);
             return View(employeeLeaveAllocations);
@@ -63,6 +65,60 @@ namespace LeaveManagement.Web.Controllers
         {
             return View();
         }
+
+        // GET: EmployeesController/EditLeaveAllocation/5
+        [ActionName("EditLeaveAllocation")]
+        public async Task<ActionResult> EditLeaveAllocationAsync(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            LeaveAllocation? leaveAllocation = await leaveAllocationRepository.GetAsync(id);
+            
+            if (leaveAllocation == null)
+            {
+                return NotFound();
+            }
+
+            LeaveAllocationVM leaveAllocationVM = mapper.Map<LeaveAllocationVM>(leaveAllocation);
+
+            return View(leaveAllocationVM);
+        }
+
+
+        [HttpPost, ActionName("EditLeaveAllocation"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLeaveAllocation(int id, LeaveAllocationVM leaveAllocationVM)
+        {
+            if (id != leaveAllocationVM.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                LeaveAllocation leaveAllocation = mapper.Map<LeaveAllocation>(leaveAllocationVM);
+                try
+                {
+                    await leaveAllocationRepository.UpdateAsync(leaveAllocation);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await leaveAllocationRepository.Exists(leaveAllocationVM.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(actionName: nameof(IndexAsync));
+            }
+            return View(leaveAllocationVM);
+        }
+
 
         // POST: EmployeesController/Edit/5
         [HttpPost]
@@ -99,5 +155,7 @@ namespace LeaveManagement.Web.Controllers
                 return View();
             }
         }
+
+        
     }
 }

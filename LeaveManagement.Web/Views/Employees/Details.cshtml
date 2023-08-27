@@ -36,7 +36,8 @@
         @foreach(var item in Model.LeaveAllocations)
         {
             <li>
-                @item.LeaveType.Name | Allocated days: ( @item.NumberOfDays )
+                @item.LeaveType.Name | Allocated days: ( @item.NumberOfDays ) |
+                <a asp-controller="Employees" asp-action="EditLeaveAllocation" asp-route-id="@item.Id" class="btn btn-warning">Update Leave Allocation</a>
             </li>
         }
     </ul>
