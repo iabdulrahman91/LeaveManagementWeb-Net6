@@ -7,28 +7,35 @@ namespace LeaveManagement.Web.Services
     {
         private string smtpServer;
         private int smtpPort;
-        private string senderEmail;
+        private string fromEmailAddress;
 
-        public EmailSender(string smtpServer, int smtpPort, string senderEmail)
+        public EmailSender(string smtpServer, int smtpPort, string fromEmailAddress)
         {
             this.smtpServer = smtpServer;
             this.smtpPort = smtpPort;
-            this.senderEmail = senderEmail;
+            this.fromEmailAddress = fromEmailAddress;
         }
 
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            var msg = new MailMessage()
+            var message = new MailMessage
             {
-                From = new MailAddress(this.senderEmail),
+                From = new MailAddress(fromEmailAddress),
                 Subject = subject,
                 Body = htmlMessage,
                 IsBodyHtml = true
             };
-            msg.To.Add(new MailAddress(email));
 
-            using var client = new SmtpClient(this.smtpServer, this.smtpPort);
-            client.Send(msg);
+            message.To.Add(new MailAddress(email));
+
+            try
+            {
+                using var client = new SmtpClient(smtpServer, smtpPort);
+                client.Send(message);
+            } catch (SmtpException e)
+            {
+                throw new Exception("Error occur while establish connectivity to SMTP server", e);
+            }
 
             return Task.CompletedTask;
         }
